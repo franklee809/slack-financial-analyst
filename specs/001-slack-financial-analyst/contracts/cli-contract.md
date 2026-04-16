@@ -52,3 +52,33 @@ python main.py --run-once
 # Dry run (no Slack posts)
 python main.py --run-once --dry-run
 ```
+
+## Runtime Dependencies
+
+The `claude` CLI must be installed and authenticated on the host machine:
+
+```bash
+claude auth login
+```
+
+The bot invokes Claude as:
+
+```bash
+claude -p "<system+user prompt>" --image /tmp/<image-file>
+```
+
+A non-zero exit or timeout (>120s) is treated as a transient failure — the image is **not** marked processed and will be retried on the next scheduler cycle. (No Anthropic API key is required; usage is billed via your Claude Pro subscription.)
+
+## Posting Behavior
+
+Analysis is posted as a **Slack thread reply** under the original image message (`thread_ts = original_message_ts`), not as a new top-level channel message. Output is a structured markdown message with three fixed sections:
+
+- `*Key Positions*`
+- `*Observations*`
+- `*Actionable Insights*`
+
+Target length ≤ 1,500 characters. Hard cap at 3,900 characters (Slack's 4,000-char message limit with buffer). Over-long responses are truncated with an ellipsis and a warning log line.
+
+## First-Run Behavior
+
+On the **very first run** (when `processed.json` does not exist), the bot records the current Slack-format timestamp as `first_run_at` and **ignores all images posted before that moment**. Only images posted after the first run are ever analyzed. This prevents a flood of analyses when the bot is first deployed to an established channel.

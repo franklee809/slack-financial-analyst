@@ -44,6 +44,8 @@ Run skills in order:
 ## Active Technologies
 - Python 3.11+ + `slack_sdk` (Slack API), `anthropic` (Claude vision), `schedule` (polling loop), `python-dotenv` (env config), `requests` (authenticated image download) (001-slack-financial-analyst)
 - Local JSON file (`processed.json`) for deduplication state (001-slack-financial-analyst)
+- Python 3.11+ + `slack_sdk` (Slack API), `schedule` (polling loop), `python-dotenv` (env config), `requests` (authenticated image download) (001-slack-financial-analyst)
+- Local JSON file (`processed.json`) holding `first_run_at` timestamp, `processed_file_ids` set, and `last_run_at` timestamp (001-slack-financial-analyst)
 
 ## Recent Changes
 - 001-slack-financial-analyst: Added Python 3.11+ + `slack_sdk` (Slack API), `anthropic` (Claude vision), `schedule` (polling loop), `python-dotenv` (env config), `requests` (authenticated image download)

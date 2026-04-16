@@ -1,6 +1,6 @@
 # Research: Slack Financial Analyst
 
-**Branch**: `001-slack-financial-analyst` | **Date**: 2026-04-16
+**Branch**: `001-slack-financial-analyst` | **Date**: 2026-04-16 (refreshed after clarification session)
 
 ## Decision 1: Slack SDK Choice
 
@@ -40,9 +40,33 @@
 
 ## Decision 6: Analysis Output Target
 
-**Decision**: Post analysis as a new top-level message in the same Slack channel  
-**Rationale**: Matches the assumption in the spec. Thread replies require tracking the original message timestamp per image. Top-level messages are simpler and keep the channel as a running log of analyses. Can be changed to thread replies in a future iteration.  
-**Alternatives considered**: Thread reply under original image post (more organised but adds state complexity), writing to a file (loses the Slack integration value)
+**Decision**: Post analysis as a **thread reply** under the original image message (`thread_ts = original_message_ts`)  
+**Rationale**: Confirmed via clarification Q3 — thread replies keep the channel uncluttered and preserve image ↔ analysis pairing. Requires capturing each image's parent message `ts` when listing channel history (`conversations.history` already returns this alongside `files`), then passing it as `thread_ts` to `chat.postMessage`.  
+**Alternatives considered**: New top-level channel messages (rejected — clutters channel), different channel (rejected — splits context), DM (rejected — user wants shared visibility)
+
+## Decision 8: Output Format and Length
+
+**Decision**: Fixed three-section structured response — **Key Positions**, **Observations**, **Actionable Insights** — targeting ≤ 1,500 characters, hard capped at 3,900 (Slack buffer under its 4,000-char limit)  
+**Rationale**: Confirmed via clarification Q2. Readable and scannable in Slack; fits in a single message; predictable enough to write tests against. The system prompt (`prompts/analyst.txt`) explicitly demands this structure.  
+**Alternatives considered**: Free-form long analysis (rejected — Slack message splitting complexity), bullet-only (rejected — loses narrative context), two-part headline+thread (rejected — redundant with the thread-reply delivery already chosen)
+
+## Decision 9: First-Run Historical Images
+
+**Decision**: Record `first_run_at` on the very first run (when no state file exists); permanently ignore images whose `posted_at < first_run_at`  
+**Rationale**: Confirmed via clarification Q1. Prevents a flood of analyses when the bot is deployed to an established channel. `first_run_at` is written atomically before any Slack read so there is no race window.  
+**Alternatives considered**: Process all historical (rejected — spammy), mark existing as processed (rejected — wastes state), last-N only (rejected — arbitrary cutoff)
+
+## Decision 10: Claude CLI Failure Handling
+
+**Decision**: On non-zero exit, timeout (>120s), or crash — log the failure, skip the image for this cycle, do NOT mark it as processed; retry naturally on the next scheduler tick  
+**Rationale**: Confirmed via clarification Q5. Self-healing, no retry storms, no sleep loops. The scheduler's fixed interval is the retry backoff.  
+**Alternatives considered**: In-run retries with backoff (rejected — added complexity for marginal gain when next tick is 15min away), failure-notice posts (rejected — creates noise on transient issues), hard exit (rejected — defeats "runs 7 days without restart")
+
+## Decision 11: Default System Prompt
+
+**Decision**: Ship `prompts/analyst.txt` with the user-supplied risk-analyst prompt (radical transparency, correlation / sector / geographic / interest-rate / stress-test / liquidity / tail-risk / hedging / rebalancing), adapted to emit the three-section output format  
+**Rationale**: Confirmed via clarification Q4. Gives the bot a high-quality default out of the box; still user-replaceable via `SYSTEM_PROMPT_FILE` env var.  
+**Alternatives considered**: Generic analyst (weaker default), empty placeholder (requires setup step), multiple selectable prompts (deferred to a future enhancement)
 
 ## Decision 7: Project Structure
 
