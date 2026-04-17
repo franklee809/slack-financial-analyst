@@ -1,0 +1,11 @@
+.env
+processed.json
+processed.json.tmp
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+dist/
+.DS_Store

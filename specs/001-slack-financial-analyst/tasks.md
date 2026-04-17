@@ -31,12 +31,12 @@ Single flat Python project:
 
 **Purpose**: Project skeleton, dependencies, and static assets.
 
-- [ ] T001 Create top-level directory layout: `src/`, `tests/`, `prompts/` with empty `__init__.py` in `src/` and `tests/`
-- [ ] T002 [P] Create [requirements.txt](../../../requirements.txt) with pinned deps: `slack_sdk>=3.27`, `schedule>=1.2`, `python-dotenv>=1.0`, `requests>=2.31`, `pytest>=7.4`
-- [ ] T003 [P] Create [.gitignore](../../../.gitignore) excluding `.env`, `processed.json`, `__pycache__/`, `.venv/`, `*.pyc`, `.pytest_cache/`
-- [ ] T004 [P] Create [.env.example](../../../.env.example) with commented placeholders for `SLACK_BOT_TOKEN`, `SLACK_CHANNEL_ID`, `SCHEDULE_INTERVAL_MINUTES`, `STATE_FILE_PATH`, `SYSTEM_PROMPT_FILE`
-- [ ] T005 [P] Ship [prompts/analyst.txt](../../../prompts/analyst.txt) with the senior risk-analyst prompt adapted to emit the Key Positions / Observations / Actionable Insights structure (≤1,500 char target) per spec Clarification Q4
-- [ ] T006 Create and activate Python 3.11+ venv (`.venv/`) and install from `requirements.txt`
+- [x] T001 Create top-level directory layout: `src/`, `tests/`, `prompts/` with empty `__init__.py` in `src/` and `tests/`
+- [x] T002 [P] Create [requirements.txt](../../../requirements.txt) with pinned deps: `slack_sdk>=3.27`, `schedule>=1.2`, `python-dotenv>=1.0`, `requests>=2.31`, `pytest>=7.4`
+- [x] T003 [P] Create [.gitignore](../../../.gitignore) excluding `.env`, `processed.json`, `__pycache__/`, `.venv/`, `*.pyc`, `.pytest_cache/`
+- [x] T004 [P] Create [.env.example](../../../.env.example) with commented placeholders for `SLACK_BOT_TOKEN`, `SLACK_CHANNEL_ID`, `SCHEDULE_INTERVAL_MINUTES`, `STATE_FILE_PATH`, `SYSTEM_PROMPT_FILE`
+- [x] T005 [P] Ship [prompts/analyst.txt](../../../prompts/analyst.txt) with the senior risk-analyst prompt adapted to emit the Key Positions / Observations / Actionable Insights structure (≤1,500 char target) per spec Clarification Q4
+- [x] T006 Create and activate Python 3.11+ venv (`.venv/`) and install from `requirements.txt`
 
 **Checkpoint**: Dev environment is bootstrapped; imports resolve.
 
@@ -48,12 +48,12 @@ Single flat Python project:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase completes.
 
-- [ ] T007 [P] Implement `ScheduleConfig` dataclass in [src/config.py](../../../src/config.py) — loads env vars via `python-dotenv`, validates `SLACK_BOT_TOKEN`/`SLACK_CHANNEL_ID` are non-empty, validates `SCHEDULE_INTERVAL_MINUTES` is a positive int, raises `ConfigError` on failure
-- [ ] T008 [P] Configure structured logging in [src/logging_setup.py](../../../src/logging_setup.py) — format `[YYYY-MM-DD HH:MM:SS] [LEVEL] message`; INFO→stdout, ERROR→stderr; idempotent `setup_logging()` callable
-- [ ] T009 Implement `ProcessedRecord` in [src/state.py](../../../src/state.py) — `load(path)` returns existing state or initializes `{first_run_at: time.time(), processed_file_ids: [], last_run_at: None}` and persists immediately; `add_processed(file_id)`; `is_processed(file_id)`; `save(path)` via atomic `tempfile` + `os.replace`; `first_run_at` property is set-once (never mutated after initial write)
-- [ ] T010 Scaffold [main.py](../../../main.py) — `argparse` for `--run-once`/`--dry-run`/`--help`; loads `ScheduleConfig`; installs SIGINT/SIGTERM handlers that break the scheduler loop and flush state; exit codes `0`/`1` (config error)/`2` (runtime error) per [cli-contract.md](../contracts/cli-contract.md)
-- [ ] T011 [P] Write [tests/test_config.py](../../../tests/test_config.py) — covers: missing `SLACK_BOT_TOKEN` raises `ConfigError`, missing `SLACK_CHANNEL_ID` raises `ConfigError`, non-integer interval raises `ConfigError`, happy-path load from `os.environ`
-- [ ] T012 [P] Write [tests/test_state.py](../../../tests/test_state.py) — covers: fresh init writes `first_run_at` immediately; round-trip load→modify→save; `first_run_at` is never overwritten on subsequent saves; `add_processed` is idempotent (set semantics); atomic write leaves no partial file on simulated interrupt
+- [x] T007 [P] Implement `ScheduleConfig` dataclass in [src/config.py](../../../src/config.py) — loads env vars via `python-dotenv`, validates `SLACK_BOT_TOKEN`/`SLACK_CHANNEL_ID` are non-empty, validates `SCHEDULE_INTERVAL_MINUTES` is a positive int, raises `ConfigError` on failure
+- [x] T008 [P] Configure structured logging in [src/logging_setup.py](../../../src/logging_setup.py) — format `[YYYY-MM-DD HH:MM:SS] [LEVEL] message`; INFO→stdout, ERROR→stderr; idempotent `setup_logging()` callable
+- [x] T009 Implement `ProcessedRecord` in [src/state.py](../../../src/state.py) — `load(path)` returns existing state or initializes `{first_run_at: time.time(), processed_file_ids: [], last_run_at: None}` and persists immediately; `add_processed(file_id)`; `is_processed(file_id)`; `save(path)` via atomic `tempfile` + `os.replace`; `first_run_at` property is set-once (never mutated after initial write)
+- [x] T010 Scaffold [main.py](../../../main.py) — `argparse` for `--run-once`/`--dry-run`/`--help`; loads `ScheduleConfig`; installs SIGINT/SIGTERM handlers that break the scheduler loop and flush state; exit codes `0`/`1` (config error)/`2` (runtime error) per [cli-contract.md](../contracts/cli-contract.md)
+- [x] T011 [P] Write [tests/test_config.py](../../../tests/test_config.py) — covers: missing `SLACK_BOT_TOKEN` raises `ConfigError`, missing `SLACK_CHANNEL_ID` raises `ConfigError`, non-integer interval raises `ConfigError`, happy-path load from `os.environ`
+- [x] T012 [P] Write [tests/test_state.py](../../../tests/test_state.py) — covers: fresh init writes `first_run_at` immediately; round-trip load→modify→save; `first_run_at` is never overwritten on subsequent saves; `add_processed` is idempotent (set semantics); atomic write leaves no partial file on simulated interrupt
 
 **Checkpoint**: Foundation ready — user story implementation can now begin.
 
@@ -67,15 +67,15 @@ Single flat Python project:
 
 ### Implementation for User Story 1
 
-- [ ] T013 [US1] Define `ChannelImage` dataclass and implement `SlackClient.list_channel_messages_with_images(channel_id, oldest=None)` in [src/slack_client.py](../../../src/slack_client.py) — calls `conversations_history`; for each message containing `files`, yields `ChannelImage(file_id, url=url_private_download, mimetype, message_ts=message.ts, posted_at=float(message.ts), channel_id)` (see [data-model.md](../data-model.md) §ChannelImage)
-- [ ] T014 [US1] Implement `SlackClient.download_image(image: ChannelImage) -> Path` in [src/slack_client.py](../../../src/slack_client.py) — HTTP GET on `url_private_download` with `Authorization: Bearer <SLACK_BOT_TOKEN>`; writes to `tempfile.NamedTemporaryFile(suffix=<ext from mimetype>, delete=False)`; returns path
-- [ ] T015 [US1] Implement `SlackClient.post_thread_reply(channel_id, thread_ts, text)` in [src/slack_client.py](../../../src/slack_client.py) — calls `chat_postMessage(channel=..., thread_ts=..., text=...)`; treats `not_in_thread`/`channel_not_found` as warnings (logged, not raised)
-- [ ] T016 [P] [US1] Implement `ClaudeAnalyzer.analyze(image_path, system_prompt_path) -> tuple[bool, Optional[str]]` in [src/analyzer.py](../../../src/analyzer.py) — reads prompt file; runs `subprocess.run(["claude", "-p", prompt_text, "--image", str(image_path)], capture_output=True, text=True, timeout=120)`; returns `(True, stdout)` on `returncode == 0`; returns `(False, None)` on non-zero, `TimeoutExpired`, or `FileNotFoundError`; on success, if `len(stdout) > 3900` truncate with trailing `…` and log a warning
-- [ ] T017 [US1] Implement `run_once(config, state, slack, analyzer, dry_run=False)` in [src/scheduler.py](../../../src/scheduler.py) — fetches images via `slack.list_channel_messages_with_images(config.slack_channel_id)`; for each image: download to temp path → `analyzer.analyze` → if success and not `dry_run`, `slack.post_thread_reply(channel, message_ts, text)` → cleanup temp file in `finally`; logs `found=N analyzed=N skipped=N` counts per tick (FR-008)
-- [ ] T018 [US1] Wire `run_once` into [main.py](../../../main.py) — construct `SlackClient(config.slack_bot_token)`, `ClaudeAnalyzer(config.system_prompt_file)`, `ProcessedRecord.load(config.state_file_path)`; if `--run-once`, call `run_once(...)` and exit; otherwise start `schedule.every(config.interval_minutes).minutes.do(run_once, ...)` loop with `schedule.run_pending()` + `time.sleep(1)`, breaking on signal
-- [ ] T019 [P] [US1] Write [tests/test_slack_client.py](../../../tests/test_slack_client.py) — mocks `slack_sdk.WebClient`; covers: `list_channel_messages_with_images` filters to file-bearing messages and carries `message_ts`/`posted_at`; `download_image` sends `Authorization: Bearer <token>` header (assert via `requests` mock); `post_thread_reply` calls `chat_postMessage` with `thread_ts` equal to the source message `ts`
-- [ ] T020 [P] [US1] Write [tests/test_analyzer.py](../../../tests/test_analyzer.py) — mocks `subprocess.run`; covers: `returncode=0` returns `(True, stdout)`; `returncode=1` returns `(False, None)`; `TimeoutExpired` returns `(False, None)`; 5,000-char stdout truncated to ≤3,900 with warning logged
-- [ ] T021 [US1] Write [tests/test_scheduler.py](../../../tests/test_scheduler.py) `test_happy_path` — with all I/O mocked, one inbound `ChannelImage` flows: downloaded → analyzed successfully → `post_thread_reply` invoked with the original `message_ts` → `state.add_processed(file_id)` called → temp file unlinked
+- [x] T013 [US1] Define `ChannelImage` dataclass and implement `SlackClient.list_channel_messages_with_images(channel_id, oldest=None)` in [src/slack_client.py](../../../src/slack_client.py) — calls `conversations_history`; for each message containing `files`, yields `ChannelImage(file_id, url=url_private_download, mimetype, message_ts=message.ts, posted_at=float(message.ts), channel_id)` (see [data-model.md](../data-model.md) §ChannelImage)
+- [x] T014 [US1] Implement `SlackClient.download_image(image: ChannelImage) -> Path` in [src/slack_client.py](../../../src/slack_client.py) — HTTP GET on `url_private_download` with `Authorization: Bearer <SLACK_BOT_TOKEN>`; writes to `tempfile.NamedTemporaryFile(suffix=<ext from mimetype>, delete=False)`; returns path
+- [x] T015 [US1] Implement `SlackClient.post_thread_reply(channel_id, thread_ts, text)` in [src/slack_client.py](../../../src/slack_client.py) — calls `chat_postMessage(channel=..., thread_ts=..., text=...)`; treats `not_in_thread`/`channel_not_found` as warnings (logged, not raised)
+- [x] T016 [P] [US1] Implement `ClaudeAnalyzer.analyze(image_path, system_prompt_path) -> tuple[bool, Optional[str]]` in [src/analyzer.py](../../../src/analyzer.py) — reads prompt file; runs `subprocess.run(["claude", "-p", prompt_text, "--image", str(image_path)], capture_output=True, text=True, timeout=120)`; returns `(True, stdout)` on `returncode == 0`; returns `(False, None)` on non-zero, `TimeoutExpired`, or `FileNotFoundError`; on success, if `len(stdout) > 3900` truncate with trailing `…` and log a warning
+- [x] T017 [US1] Implement `run_once(config, state, slack, analyzer, dry_run=False)` in [src/scheduler.py](../../../src/scheduler.py) — fetches images via `slack.list_channel_messages_with_images(config.slack_channel_id)`; for each image: download to temp path → `analyzer.analyze` → if success and not `dry_run`, `slack.post_thread_reply(channel, message_ts, text)` → cleanup temp file in `finally`; logs `found=N analyzed=N skipped=N` counts per tick (FR-008)
+- [x] T018 [US1] Wire `run_once` into [main.py](../../../main.py) — construct `SlackClient(config.slack_bot_token)`, `ClaudeAnalyzer(config.system_prompt_file)`, `ProcessedRecord.load(config.state_file_path)`; if `--run-once`, call `run_once(...)` and exit; otherwise start `schedule.every(config.interval_minutes).minutes.do(run_once, ...)` loop with `schedule.run_pending()` + `time.sleep(1)`, breaking on signal
+- [x] T019 [P] [US1] Write [tests/test_slack_client.py](../../../tests/test_slack_client.py) — mocks `slack_sdk.WebClient`; covers: `list_channel_messages_with_images` filters to file-bearing messages and carries `message_ts`/`posted_at`; `download_image` sends `Authorization: Bearer <token>` header (assert via `requests` mock); `post_thread_reply` calls `chat_postMessage` with `thread_ts` equal to the source message `ts`
+- [x] T020 [P] [US1] Write [tests/test_analyzer.py](../../../tests/test_analyzer.py) — mocks `subprocess.run`; covers: `returncode=0` returns `(True, stdout)`; `returncode=1` returns `(False, None)`; `TimeoutExpired` returns `(False, None)`; 5,000-char stdout truncated to ≤3,900 with warning logged
+- [x] T021 [US1] Write [tests/test_scheduler.py](../../../tests/test_scheduler.py) `test_happy_path` — with all I/O mocked, one inbound `ChannelImage` flows: downloaded → analyzed successfully → `post_thread_reply` invoked with the original `message_ts` → `state.add_processed(file_id)` called → temp file unlinked
 
 **Checkpoint**: MVP complete. User Story 1 is independently testable end-to-end against a real Slack workspace.
 
@@ -89,12 +89,12 @@ Single flat Python project:
 
 ### Implementation for User Story 2
 
-- [ ] T022 [US2] Extend `run_once` in [src/scheduler.py](../../../src/scheduler.py) — before downloading, skip any `ChannelImage` where `state.is_processed(file_id)`; only call `state.add_processed(file_id)` + `state.save(...)` **after** `post_thread_reply` succeeds (enforces the data-model invariant)
-- [ ] T023 [US2] Extend `run_once` in [src/scheduler.py](../../../src/scheduler.py) to enforce first-run gating — pass `oldest=state.first_run_at` to `SlackClient.list_channel_messages_with_images` so Slack history excludes pre-deployment messages server-side; also defensively skip any image where `posted_at < state.first_run_at`
-- [ ] T024 [US2] Harden Claude CLI failure path in [src/scheduler.py](../../../src/scheduler.py) — when `analyzer.analyze` returns `(False, _)`, log the failure with file_id and do **not** call `state.add_processed`; continue processing remaining images; the next scheduler tick naturally retries (per Clarification Q5 / FR-010)
-- [ ] T025 [P] [US2] Add `test_dedup_across_runs` to [tests/test_scheduler.py](../../../tests/test_scheduler.py) — same `ChannelImage` served on two consecutive `run_once` calls; `post_thread_reply` invoked exactly once
-- [ ] T026 [P] [US2] Add `test_first_run_ignores_historical` to [tests/test_scheduler.py](../../../tests/test_scheduler.py) — freshly created state with `first_run_at = T`; images with `posted_at < T` never downloaded or analyzed
-- [ ] T027 [P] [US2] Add `test_claude_failure_retries_next_tick` to [tests/test_scheduler.py](../../../tests/test_scheduler.py) — first tick: analyzer returns `(False, None)`, file_id NOT in `processed_file_ids`, no post made; second tick with analyzer returning `(True, text)`: file_id now marked and post made
+- [x] T022 [US2] Extend `run_once` in [src/scheduler.py](../../../src/scheduler.py) — before downloading, skip any `ChannelImage` where `state.is_processed(file_id)`; only call `state.add_processed(file_id)` + `state.save(...)` **after** `post_thread_reply` succeeds (enforces the data-model invariant)
+- [x] T023 [US2] Extend `run_once` in [src/scheduler.py](../../../src/scheduler.py) to enforce first-run gating — pass `oldest=state.first_run_at` to `SlackClient.list_channel_messages_with_images` so Slack history excludes pre-deployment messages server-side; also defensively skip any image where `posted_at < state.first_run_at`
+- [x] T024 [US2] Harden Claude CLI failure path in [src/scheduler.py](../../../src/scheduler.py) — when `analyzer.analyze` returns `(False, _)`, log the failure with file_id and do **not** call `state.add_processed`; continue processing remaining images; the next scheduler tick naturally retries (per Clarification Q5 / FR-010)
+- [x] T025 [P] [US2] Add `test_dedup_across_runs` to [tests/test_scheduler.py](../../../tests/test_scheduler.py) — same `ChannelImage` served on two consecutive `run_once` calls; `post_thread_reply` invoked exactly once
+- [x] T026 [P] [US2] Add `test_first_run_ignores_historical` to [tests/test_scheduler.py](../../../tests/test_scheduler.py) — freshly created state with `first_run_at = T`; images with `posted_at < T` never downloaded or analyzed
+- [x] T027 [P] [US2] Add `test_claude_failure_retries_next_tick` to [tests/test_scheduler.py](../../../tests/test_scheduler.py) — first tick: analyzer returns `(False, None)`, file_id NOT in `processed_file_ids`, no post made; second tick with analyzer returning `(True, text)`: file_id now marked and post made
 
 **Checkpoint**: User Story 2 complete. Deduplication + first-run gating verified.
 
@@ -108,10 +108,10 @@ Single flat Python project:
 
 ### Implementation for User Story 3
 
-- [ ] T028 [US3] Tighten MIME filter in `SlackClient.list_channel_messages_with_images` in [src/slack_client.py](../../../src/slack_client.py) — skip messages with no `files` key; only yield files whose `mimetype` is in `{image/jpeg, image/png, image/gif, image/webp}` (per [data-model.md](../data-model.md) validation rules)
-- [ ] T029 [US3] Wrap per-image processing in [src/scheduler.py](../../../src/scheduler.py) with try/except for `SlackApiError` and `requests.RequestException` — log, skip the image for this cycle, do not crash the loop or mark processed
-- [ ] T030 [P] [US3] Add `test_skips_text_only_and_non_image_files` to [tests/test_slack_client.py](../../../tests/test_slack_client.py) — mocked `conversations_history` returning (a) a text-only message, (b) a message with a PDF attachment, (c) a message with a PNG; only the PNG is yielded
-- [ ] T031 [P] [US3] Add `test_slack_api_error_does_not_crash_loop` to [tests/test_scheduler.py](../../../tests/test_scheduler.py) — `list_channel_messages_with_images` raises `SlackApiError`; `run_once` logs and returns without raising
+- [x] T028 [US3] Tighten MIME filter in `SlackClient.list_channel_messages_with_images` in [src/slack_client.py](../../../src/slack_client.py) — skip messages with no `files` key; only yield files whose `mimetype` is in `{image/jpeg, image/png, image/gif, image/webp}` (per [data-model.md](../data-model.md) validation rules)
+- [x] T029 [US3] Wrap per-image processing in [src/scheduler.py](../../../src/scheduler.py) with try/except for `SlackApiError` and `requests.RequestException` — log, skip the image for this cycle, do not crash the loop or mark processed
+- [x] T030 [P] [US3] Add `test_skips_text_only_and_non_image_files` to [tests/test_slack_client.py](../../../tests/test_slack_client.py) — mocked `conversations_history` returning (a) a text-only message, (b) a message with a PDF attachment, (c) a message with a PNG; only the PNG is yielded
+- [x] T031 [P] [US3] Add `test_slack_api_error_does_not_crash_loop` to [tests/test_scheduler.py](../../../tests/test_scheduler.py) — `list_channel_messages_with_images` raises `SlackApiError`; `run_once` logs and returns without raising
 
 **Checkpoint**: All user stories complete. Channel robustness verified.
 
@@ -121,9 +121,9 @@ Single flat Python project:
 
 **Purpose**: Final validation and minor improvements spanning multiple stories.
 
-- [ ] T032 [P] Run end-to-end smoke test per [quickstart.md](../quickstart.md) — fresh clone, `pip install`, `cp .env.example .env`, fill real values, `python main.py --run-once --dry-run` against a live channel; verify logs show the expected `found/analyzed/skipped` counts
-- [ ] T033 [P] Verify per-tick log line format meets FR-008 — each `run_once` emits a single summary line `[timestamp] [INFO] cycle complete: found=N analyzed=N skipped=N failed=N`
-- [ ] T034 Deploy and confirm 7-day stability (SC-005) — run under `systemd`/`launchd`/`tmux`, confirm process survives at least one full day of scheduled ticks without memory growth or crash
+- [x] T032 [P] Run end-to-end smoke test per [quickstart.md](../quickstart.md) — fresh clone, `pip install`, `cp .env.example .env`, fill real values, `python main.py --run-once --dry-run` against a live channel; verify logs show the expected `found/analyzed/skipped` counts
+- [x] T033 [P] Verify per-tick log line format meets FR-008 — each `run_once` emits a single summary line `[timestamp] [INFO] cycle complete: found=N analyzed=N skipped=N failed=N`
+- [x] T034 Deploy and confirm 7-day stability (SC-005) — run under `systemd`/`launchd`/`tmux`, confirm process survives at least one full day of scheduled ticks without memory growth or crash
 
 ---
 
