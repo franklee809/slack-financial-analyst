@@ -9,3 +9,10 @@ venv/
 *.egg-info/
 dist/
 .DS_Store
+
+# npx skills-installed agent tooling (tracked via skills-lock.json)
+.agents/
+.kiro/
+skills/
+.claude/skills/conventional-commit
+.claude/skills/find-skills
